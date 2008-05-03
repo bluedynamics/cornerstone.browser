@@ -44,7 +44,7 @@ class RequestMixin(object):
         
         if considerspecific and not considerexisting:
             form = self.request.form
-            for param in considerexisting:
+            for param in considerspecific:
                 value = form.get(param)
                 if value:
                     params[param] = value
