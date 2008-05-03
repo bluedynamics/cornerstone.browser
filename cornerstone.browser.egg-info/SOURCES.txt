@@ -20,3 +20,6 @@ cornerstone/browser/metaconfigure.py
 cornerstone/browser/metadirectives.py
 cornerstone/browser/overrides.zcml
 cornerstone/browser/profile.zcml
+cornerstone/browser/cornerstone_browser/cornerstone_hotspot.js
+cornerstone/browser/profile/jsregistry.xml
+cornerstone/browser/profile/skins.xml
