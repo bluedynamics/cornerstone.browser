@@ -13,6 +13,7 @@ from zope.event import notify
 from interfaces import ConflictingHotspot
 from interfaces import IHotspot
 from interfaces import IHotspotCheck
+from interfaces import IHotspotHitEvent
 
 from base import XBrowserView
 
