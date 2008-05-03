@@ -14,5 +14,7 @@
 	  allowed_interface=".interfaces.IHotspotCheck"
 	  permission="zope.Public"
 	/>
+	
+	<subscriber handler=".hotspot.writeHotspotUrlToCookie" />
 
 </configure>

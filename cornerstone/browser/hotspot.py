@@ -7,6 +7,7 @@ __author__ = """Robert Niederreiter <rnix@squarewave.at>"""
 __docformat__ = 'plaintext'
 
 from zope.interface import implements
+from zope.component import adapter
 from zope.component import getUtilitiesFor
 from zope.event import notify
 
@@ -70,7 +71,7 @@ class HotspotCheck(XBrowserView):
             if hotspot[1].weight(self.context, self.request) > 0:
                 possible.append(hotspot[1])
         if not possible:
-            return
+            return True
         possible.sort(cmp=lambda x, y: x.weight < y.weight and -1 or 1)
         
         lastweight = 0
@@ -100,5 +101,15 @@ class HotspotCheck(XBrowserView):
         notify(HotspotHitEvent(self.context,
                                self.request,
                                hotspoturl))
+        return True
 
 
+@adapter(IHotspotHitEvent)
+def writeHotspotUrlToCookie(event):
+    """Default IHotspotHitEvent subscriber.
+    
+    Write hotspot url to cookie.
+    """
+    request = event.request
+    url = event.hotspoturl
+    request.response.setCookie('hotspoturl', url)

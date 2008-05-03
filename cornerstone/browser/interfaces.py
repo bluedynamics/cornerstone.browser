@@ -9,8 +9,6 @@ __docformat__ = 'plaintext'
 from zope.interface import Interface
 from zope.interface import Attribute
 
-from zope.app.event.interfaces import IObjectEvent
-
 class IRequestMixin(Interface):
     """A request helper mixin.
     
@@ -55,9 +53,11 @@ class ConflictingHotspot(Exception):
     """
 
 
-class IHotspotHitEvent(IObjectEvent):
+class IHotspotHitEvent(Interface):
     """Fired when a resource was recognized as hotspot.
     """
+    
+    context = Attribute(u"Hotspot context")
     
     request = Attribute(u"Request object")
     
