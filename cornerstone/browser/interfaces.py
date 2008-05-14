@@ -61,7 +61,7 @@ class IHotspotHitEvent(Interface):
     
     request = Attribute(u"Request object")
     
-    url = Attribute(u"URL defining the hotspot")
+    hotspoturl = Attribute(u"URL defining the hotspot")
 
 
 class IHotspot(Interface):
@@ -79,6 +79,7 @@ class IHotspot(Interface):
     def weight(obj, request):
         """Return the weight of object for this hotspot.
         """
+
 
 class IHotspotCheck(Interface):
     """Interface to check hotspots.
