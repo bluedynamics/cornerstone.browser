@@ -112,4 +112,4 @@ def writeHotspotUrlToCookie(event):
     """
     request = event.request
     url = event.hotspoturl
-    request.response.setCookie('hotspoturl', url)
+    request.response.setCookie('hotspoturl', url, path='/')
