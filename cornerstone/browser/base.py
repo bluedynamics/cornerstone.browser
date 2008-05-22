@@ -31,7 +31,7 @@ class RequestMixin(object):
         return url
     
     def makeQuery(self, additionals=None, ignores=None,
-                  considerexisting=True, considerspecific=None):
+                  considerexisting=False, considerspecific=None):
         params = {}
         if considerexisting:
             form = self.request.form

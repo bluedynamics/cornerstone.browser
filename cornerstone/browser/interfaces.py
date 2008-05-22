@@ -33,14 +33,14 @@ class IRequestMixin(Interface):
         """
     
     def makeQuery(additionals=None, ignores=None,
-                  considerexisting=True, considerspecific=None):
+                  considerexisting=False, considerspecific=None):
         """Make a query string.
         
         @param additionals - a dict containing additional request params
         @param ignores - a list of param names to ignore
-        @param considerexisting - When set to False, this forces to ignore all
-                                  existing parameters from request.form and
-                                  only uses the additionals
+        @param considerexisting - When set to True, this forces to consider all
+                                  existing parameters from request.form, but
+                                  additionals overrule them anyway.
         @param considerspecific - list of param names to consider specific.
                                   only takes effect if considerexisting is set
                                   to False. this attribute rules ignores.
