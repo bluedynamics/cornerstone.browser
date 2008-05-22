@@ -46,6 +46,38 @@ class IRequestMixin(Interface):
                                   to False. this attribute rules ignores.
         @return string - the query
         """
+    
+    def formvalue(name, default=None):
+        """Return value for name from form or default.
+        
+        @param name - the name of the requested parameter
+        @param default - default value to return if param by name not exists
+        @return value - the requested value
+        """
+    
+    def cookievalue(name, default=None):
+        """Return value for name from cookie or default.
+        
+        @param name - the name of the requested parameter
+        @param default - default value to return if param by name not exists
+        @return value - the requested value
+        """
+    
+    def selected(name, value, cookiewins=False):
+        """Check wether request contains param by name and if value is value
+        of this param.
+        
+        @param name - the name of the request parameter
+        @param value - the value to check against
+        @param cookiewins - flag wether to prefer value from cookie
+        @return bool - wether requested parameter contains value equal to value
+        """
+    
+    def redirect(url):
+        """Redirect to url.
+        
+        @param url - the url to redirect to.
+        """
 
 
 class ConflictingHotspot(Exception):

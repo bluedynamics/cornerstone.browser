@@ -53,6 +53,26 @@ class RequestMixin(object):
             params.update(additionals)
         
         return make_query(params)
+    
+    def formvalue(self, name, default=None):
+        return self.request.form.get(name, default)
+    
+    def cookievalue(self, name, default):
+        return self.request.cookies.get(name, default)
+    
+    def selected(self, name, value, cookiewins=False):
+        if cookiewins:
+            requestedvalue = self.cookievalue(name)
+            if not requestedvalue:
+                requestedvalue = self.formvalue(name)
+        else:   
+            requestedvalue = self.formvalue(name)
+        if requestedvalue == value:
+            return True
+        return False
+    
+    def redirect(self, url):
+        self.request.response.redirect(url)
 
 
 class RequestTool(RequestMixin):
