@@ -47,13 +47,19 @@ class Hotspot(object):
         if self.obj:
             if isinstance(obj, self.obj):
                 weight += 1
+            else:
+                weight -= 1
         if self.interface:
             if self.interface.providedBy(obj):
                 weight += 1
+            else:
+                weight -= 1
         if self.resource:
             url = request['ACTUAL_URL']
             if url.find('/%s' % self.resource) != -1:
                 weight += 1
+            else:
+                weight -= 1
         return weight
 
 
@@ -68,21 +74,22 @@ class HotspotCheck(XBrowserView):
         
         possible = list()
         for hotspot in hotspots:
-            if hotspot[1].weight(self.context, self.request) > 0:
-                possible.append(hotspot[1])
+            weight = hotspot[1].weight(self.context, self.request)
+            if weight > 0:
+                possible.append((hotspot[1], weight))
         if not possible:
             return True
-        possible.sort(cmp=lambda x, y: x.weight < y.weight and -1 or 1)
+        possible.sort(cmp=lambda x, y: x[1] > y[1] and -1 or 1)
         
         lastweight = 0
         for hotspot in possible:
-            currentweight = hotspot.weight
+            currentweight = hotspot[1]
             if currentweight == lastweight:
                 raise ConflictingHotspot(u"More than one hotspot definition "
                                          "matching requested resource.")
             lastweight = currentweight
         
-        hotspot = possible[0]
+        hotspot = possible[0][0]
         resource = None
         if hotspot.resource:
             resource = hotspot.resource
@@ -90,10 +97,12 @@ class HotspotCheck(XBrowserView):
         consider = list()
         if hotspot.considerparams:
             consider += hotspot.considerparams
-        if len(possible) > 1:
-            for hotspot in possible[1:]:
-                if hotspot.considerparams:
-                        consider += hotspot.considerparams
+        
+        # not sure atm if i want to consider params of other possibles as well
+        #if len(possible) > 1:
+        #    for hotspot in possible[1:]:
+        #        if hotspot.considerparams:
+        #                consider += hotspot.considerparams
         
         query = self.makeQuery(considerexisting=False,
                                considerspecific=consider)
