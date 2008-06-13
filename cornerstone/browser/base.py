@@ -6,10 +6,22 @@
 __author__ = """Robert Niederreiter <rnix@squarewave.at>"""
 __docformat__ = 'plaintext'
 
+import types
+
+from sets import Set
+
 from zope.interface import implements
+from zope.component import getAdapter
+from zope.component.interfaces import ComponentLookupError
+
 from Products.Five import BrowserView
 from ZTUtils import make_query
+
+from interfaces import REQUEST, COOKIE, SESSION
 from interfaces import IRequestMixin
+from interfaces import IRequestDefaultValues
+
+EMPTYMARKER = []
 
 class RequestMixin(object):
     """IRequestMixin implementation.
@@ -18,6 +30,14 @@ class RequestMixin(object):
     implements(IRequestMixin)
     
     nameprefix = None
+    checkboxpostfix = 'cb'
+    
+    def writeFormData(self, additionals=None, ignores=None,
+                      considerexisting=False, considerspecific=None,
+                      nameprefix=False, checkboxes=[], writechain=(COOKIE,)):
+        params = self._chaindata(additionals, ignores, considerexisting,
+                                 considerspecific, nameprefix, chain=chain)
+        # TODO
     
     def makeUrl(self, context=None, url=None, resource=None, query=None):
         if url and context:
@@ -32,49 +52,195 @@ class RequestMixin(object):
             url = '%s?%s' % (url, query)
         return url
     
-    def makeQuery(self, additionals=None, ignores=None,
-                  considerexisting=False, considerspecific=None):
-        params = {}
-        if considerexisting:
-            form = self.request.form
-            for key in form.keys():
-                if ignores:
-                    if key in ignores:
-                        continue
-                if key != '-C':
-                    params[key] = form[key]
-        
-        if considerspecific and not considerexisting:
-            form = self.request.form
-            for param in considerspecific:
-                value = form.get(param)
-                if value:
-                    params[param] = value
-        
-        if additionals:
-            params.update(additionals)
-        
+    def makeQuery(self, additionals=None, ignores=None, considerexisting=False,
+                  considerspecific=None, nameprefix=False, chain=(REQUEST,)):
+        params = self._chaindata(additionals, ignores, considerexisting,
+                                 considerspecific, nameprefix, chain=chain)
         return make_query(params)
     
-    def formvalue(self, name, default=None):
-        return self.request.form.get(name, default)
+    def formvalue(self, name, default=None, checkbox=False, nameprefix=False):
+        if checkbox:
+            value = self.formvalue(name, default, nameprefix=nameprefix)
+            if value:
+                return value
+            cbname = '%s_%s' % (name, self.checkboxpostfix)
+            cb = self.formvalue(cbname, default, nameprefix=nameprefix)
+            if cb:
+                return False
+            return default
+        return self.request.form.get(self._name(name, nameprefix), default)
     
-    def cookievalue(self, name, default):
-        return self.request.cookies.get(name, default)
+    def cookievalue(self, name, default=None, nameprefix=False):
+        return self.request.cookies.get(self._name(name, nameprefix), default)
     
-    def selected(self, name, value, cookiewins=False):
+    def sessionvalue(self, name, default=None, nameprefix=False):
+        session = self.context.session_data_manager.getSessionData(create=False)
+        if not session:
+            return default
+        return session.get(self._name(name, nameprefix), default)
+    
+    def requestvalue(self, name, default=None, checkbox=False,
+                     chain=(REQUEST, COOKIE), nameprefix=False):
+        return self._valuefromchain(chain, name, nameprefix, default, checkbox)
+    
+    def xrequestvalue(name, default=None, checkbox=False,
+                      chain=(REQUEST, COOKIE), nameprefix=False):
+        value = self.requestvalue(name, EMPTYMARKER, checkbox,
+                                  chain, nameprefix)
+        if value is EMPTYMARKER:
+            defaults = self._defaultvalues
+            if defaults:
+                value = defaults.get(self._name(name, nameprefix), EMPTYMARKER)
+        if value is EMPTYMARKER:
+            return default
+        return value
+    
+    def selected(self, name, value, cookiewins=False, nameprefix=False):
+        """selected() is deprecated, will be removed in version 2.0.
+        """
         if cookiewins:
-            requestedvalue = self.cookievalue(name)
-            if not requestedvalue:
-                requestedvalue = self.formvalue(name)
+            requested = self.cookievalue(name, nameprefix=nameprefix)
+            if not requested:
+                requested = self.formvalue(name, nameprefix=nameprefix)
         else:   
-            requestedvalue = self.formvalue(name)
-        if requestedvalue == value:
-            return True
-        return False
+            requested = self.formvalue(name, nameprefix=nameprefix)
+        return self._checkrequestedvalue(requested, value)
+    
+    def formselected(self, name, value, nameprefix=False):
+        requested = self.formvalue(name, nameprefix=nameprefix)
+        return self._checkrequestedvalue(requested, value)
+    
+    def cookieselected(self, name, value, nameprefix=False):
+        requested = self.cookievalue(name, nameprefix=nameprefix)
+        return self._checkrequestedvalue(requested, value)
+    
+    def sessionselected(self, name, value, nameprefix=False):
+        session = self.context.session_data_manager.getSessionData(create=False)
+        if not session:
+            return False
+        requested = session.get(self._name(name, nameprefix))
+        return self._checkrequestedvalue(requested, value)
+    
+    def requestselected(self, name, value,
+                        chain=(REQUEST, COOKIE),
+                        nameprefix=False):
+        requested = self._valuefromchain(chain, name, nameprefix)
+        return self._checkrequestedvalue(requested, value)
+    
+    def xrequestselected(self, name, value,
+                         chain=(REQUEST, COOKIE),
+                         nameprefix=False):
+        requested = self._valuefromchain(chain, name, nameprefix, EMPTYMARKER)
+        if requested is EMPTYMARKER:
+            defaults = self._defaultvalues
+            if defaults:
+                requested = defaults.get(self._name(name, nameprefix),
+                                         EMPTYMARKER)
+        if requested is EMPTYMARKER:
+            return False
+        return self._checkrequestedvalue(requested, value)
+    
+    def cookieset(self, name, value, path='/', nameprefix=False):
+        self.request.response.setCookie(self._name(name, nameprefix),
+                                        value, path=path)
+    
+    def sessionset(name, value, nameprefix=False):
+        session = self.context.session_data_manager.getSessionData(create=True)
+        session[self._name(name, nameprefix)] = value
     
     def redirect(self, url):
         self.request.response.redirect(url)
+        
+    def _name(self, name, nameprefix=False):
+        if nameprefix is False:
+            nameprefix = self.nameprefix
+        if nameprefix:
+            return '%s.%s' % (nameprefix, name)
+        return name
+    
+    def _valuefromchain(self, chain, name, nameprefix,
+                        default=None, checkbox=False):
+        value = EMPTYMARKER
+        for chained in chain:
+            if chained == REQUEST:
+                value = self.formvalue(name, EMPTYMARKER, checkbox, nameprefix)
+                if value is not EMPTYMARKER:
+                    break
+            elif chained == COOKIE:
+                value = self.cookievalue(name, EMPTYMARKER, nameprefix)
+                if value is not EMPTYMARKER:
+                    break
+            elif chained == SESSION:
+                value = self.sessionvalue(name, EMPTYMARKER, nameprefix)
+                if value is not EMPTYMARKER:
+                    break
+        if value is EMPTYMARKER:
+            return default
+        return value
+    
+    def _checkrequestedvalue(self, requested, value):
+        if type(requested) == types.ListType:
+            if value in requested:
+                return True
+        if value == requested:
+            return True
+        return False
+    
+    def _chainkeys(self, chain):
+        chainkeys = Set()
+        for chained in chain:
+            if chained == REQUEST:
+                keys = self.request.form.keys()
+            elif chained == COOKIE:
+                keys = self.request.cookie.keys()
+            elif chained == SESSION:
+                sessiondatamanager = self.context.session_data_manager
+                session = sessiondatamanager.getSessionData(create=False)
+                if not session:
+                    keys = []
+                else:
+                    keys = session.keys()
+            for key in keys:
+                chainedkeys.add(key)
+        return chainedkeys
+    
+    def _chaindata(self, additionals=None, ignores=None, considerexisting=False,
+                   considerspecific=None, nameprefix=False, chain=[]):
+        params = {}
+        if considerexisting:
+            keys = self._chainkeys(chain)
+            for key in keys:
+                if ignores:
+                    if key in ignores:
+                        continue
+                if key != '-C': # TODO: make global blacklist
+                    value = self.requestvalue(key, chain=chain, nameprefix=None)
+                    params[key] = value
+        if considerspecific and not considerexisting:
+            for param in considerspecific:
+                value = self.requestvalue(param, chain=chain, nameprefix=None)
+                if value:
+                    params[param] = value
+        if additionals:
+            prefixedadditionals = dict()
+            for key in additionals.keys():
+                name = self._name(key, nameprefix)
+                prefixedadditionals[name] = additionals[key]
+            params.update(prefixedadditionals)
+        return params
+    
+    @property
+    def _defaultvalues(self):
+        defaultvalues = None
+        if self.nameprefix:
+            try:
+                defaultvalues = getAdapter(self.context, IRequestDefaultValues,
+                                           name=self.nameprefix)
+            except ComponentLookupError, e: pass
+        try:
+            defaultvalues = IRequestDefaultValues(self.context)
+        except ComponentLookupError, e: pass
+        return defaultvalues
 
 
 class RequestTool(RequestMixin):

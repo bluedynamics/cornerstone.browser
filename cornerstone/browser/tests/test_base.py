@@ -11,6 +11,8 @@ import unittest
 import zope.app.component
 import zope.app.publisher
 
+import Products.Five
+
 from pprint import pprint
 
 #from zope.testing.doctestunit import DocFileSuite
@@ -34,6 +36,7 @@ TESTFILES = [
 def test_suite():
     setUp()
     XMLConfig('meta.zcml', zope.app.component)()
+    #XMLConfig('meta.zcml', Products.Five)()
     #XMLConfig('configure.zcml', cornerstone.browser)()
     
     return unittest.TestSuite([

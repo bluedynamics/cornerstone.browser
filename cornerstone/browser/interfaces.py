@@ -29,7 +29,7 @@ class IRequestMixin(Interface):
     
     def writeFormData(additionals=None, ignores=None, considerexisting=False,
                       considerspecific=None, nameprefix=False, checkboxes=[],
-                      writechain=(COOKIE)):
+                      writechain=(COOKIE,)):
         """Write data to storages defined in chain.
         
         @param additionals - a dict containing additional request params.
@@ -61,7 +61,7 @@ class IRequestMixin(Interface):
         """
     
     def makeQuery(additionals=None, ignores=None, considerexisting=False,
-                  considerspecific=None, nameprefix=False):
+                  considerspecific=None, nameprefix=False, chain=(REQUEST,)):
         """Make a query string.
         
         @param additionals - a dict containing additional request params.
@@ -74,6 +74,7 @@ class IRequestMixin(Interface):
                                   to False. this attribute rules ignores.
         @param nameprefix - An alternative nameprefix. If explicit set to None,
                             nameprefix is ignored.
+        @param chain - chain defines the lookup order.
         @return string - the query.
         """
     
@@ -161,13 +162,15 @@ class IRequestMixin(Interface):
         """
     
     #@deprecation.deprecate("selected() will be removed in version 2.0.")
-    def selected(name, value, cookiewins=False):
+    def selected(name, value, cookiewins=False, nameprefix=False):
         """Check wether request contains param by name and if value is value
         of this param.
         
         @param name - the name of the request parameter
         @param value - the value to check against
         @param cookiewins - flag wether to prefer value from cookie
+        @param nameprefix - An alternative nameprefix. If explicit set to None,
+                            nameprefix is ignored.
         @return bool - wether requested parameter contains value equal to value
         """
     
@@ -250,11 +253,12 @@ class IRequestMixin(Interface):
         @return bool - wether requested parameter contains value equal to value.
         """
     
-    def cookieset(name, value, nameprefix=False):
+    def cookieset(name, value, path='/', nameprefix=False):
         """Set value to cookie by name.
         
         @param name - the name of the param to set.
         @param value - the value to set for param.
+        @param path - the path the cookie is valid for.
         @param nameprefix - An alternative nameprefix. If explicit set to None,
                             nameprefix is ignored.
         """
@@ -275,9 +279,13 @@ class IRequestMixin(Interface):
         """
 
 
-class IRequestDefaultValue(Interface):
+class IRequestDefaultValues(Interface):
+    """Interface for providing default request values.
     """
-    """
+    
+    def get(name, default):
+        """Return item by name or default.
+        """
 
 
 class ConflictingHotspot(Exception):

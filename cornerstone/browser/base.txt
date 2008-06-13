@@ -1,1 +1,41 @@
->>> 'hallo'
+========================
+cornerstone.browser.base
+========================
+
+Tests for our request mixin class
+---------------------------------
+
+Create test request and write some stuff on it.
+
+    >>> from zope.publisher.browser import TestRequest
+    >>> request = TestRequest()
+    >>> request
+    <zope.publisher.browser.TestRequest instance URL=http://127.0.0.1>
+    
+    >>> request.form['p1'] = 'v1'
+    >>> request.form['p2'] = 'v2'
+    >>> request.form['cb1'] = True
+    >>> request.form['cb2'] = False
+
+
+Create dummy item.
+
+    >>> from OFS.SimpleItem import SimpleItem
+    >>> item = SimpleItem()
+    >>> item
+    <SimpleItem at >
+    
+    >>> from cornerstone.browser.interfaces import REQUEST, COOKIE, SESSION
+    >>> from cornerstone.browser.interfaces import IRequestMixin
+    >>> from cornerstone.browser.base import RequestMixin
+    
+    >>> class RequestMixinDerived(RequestMixin):
+    ...     def __init__(self, context, request):
+    ...         self.context = context
+    ...         self.request = request
+    
+    >>> obj = RequestMixinDerived(item, request)
+    >>> IRequestMixin.providedBy(obj)
+    True
+    
+    
