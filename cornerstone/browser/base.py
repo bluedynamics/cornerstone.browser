@@ -144,7 +144,7 @@ class RequestMixin(object):
         self.request.response.setCookie(self._name(name, nameprefix),
                                         value, path=path)
     
-    def sessionset(name, value, nameprefix=False):
+    def sessionset(self, name, value, nameprefix=False):
         session = self.context.session_data_manager.getSessionData(create=True)
         session[self._name(name, nameprefix)] = value
     
@@ -192,7 +192,7 @@ class RequestMixin(object):
             if chained == REQUEST:
                 keys = self.request.form.keys()
             elif chained == COOKIE:
-                keys = self.request.cookie.keys()
+                keys = self.request.cookies.keys()
             elif chained == SESSION:
                 sessiondatamanager = self.context.session_data_manager
                 session = sessiondatamanager.getSessionData(create=False)
