@@ -17,6 +17,8 @@ class RequestMixin(object):
     
     implements(IRequestMixin)
     
+    nameprefix = None
+    
     def makeUrl(self, context=None, url=None, resource=None, query=None):
         if url and context:
             raise ValueError, 'Need either context or url, both was given.'
