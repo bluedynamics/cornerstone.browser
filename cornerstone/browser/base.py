@@ -14,14 +14,29 @@ from zope.interface import implements
 from zope.component import getAdapter
 from zope.component.interfaces import ComponentLookupError
 
+from AccessControl import getSecurityManager
+
 from Products.Five import BrowserView
 from ZTUtils import make_query
 
 from interfaces import REQUEST, COOKIE, SESSION
+from interfaces import ICookiePrefix
 from interfaces import IRequestMixin
 from interfaces import IRequestDefaultValues
 
 EMPTYMARKER = []
+
+class CookiePrefix(object):
+    
+    implements(ICookiePrefix)
+    
+    def __init__(self, context):
+        self.context = context
+    
+    @property
+    def prefix(self):
+        return getSecurityManager().getUser().getId()
+
 
 class RequestMixin(object):
     """IRequestMixin implementation.
@@ -71,7 +86,8 @@ class RequestMixin(object):
         return self.request.form.get(self._name(name, nameprefix), default)
     
     def cookievalue(self, name, default=None, nameprefix=False):
-        return self.request.cookies.get(self._name(name, nameprefix), default)
+        return self.request.cookies.get(self._cookiename(name, nameprefix),
+                                        default)
     
     def sessionvalue(self, name, default=None, nameprefix=False):
         session = self.context.session_data_manager.getSessionData(create=False)
@@ -83,7 +99,7 @@ class RequestMixin(object):
                      chain=(REQUEST, COOKIE), nameprefix=False):
         return self._valuefromchain(chain, name, nameprefix, default, checkbox)
     
-    def xrequestvalue(name, default=None, checkbox=False,
+    def xrequestvalue(self, name, default=None, checkbox=False,
                       chain=(REQUEST, COOKIE), nameprefix=False):
         value = self.requestvalue(name, EMPTYMARKER, checkbox,
                                   chain, nameprefix)
@@ -141,7 +157,7 @@ class RequestMixin(object):
         return self._checkrequestedvalue(requested, value)
     
     def cookieset(self, name, value, path='/', nameprefix=False):
-        self.request.response.setCookie(self._name(name, nameprefix),
+        self.request.response.setCookie(self._cookiename(name, nameprefix),
                                         value, path=path)
     
     def sessionset(self, name, value, nameprefix=False):
@@ -157,6 +173,11 @@ class RequestMixin(object):
         if nameprefix:
             return '%s.%s' % (nameprefix, name)
         return name
+    
+    def _cookiename(self, name, nameprefix):
+        name = self._name(name, nameprefix)
+        prefix = ICookiePrefix(self.context).prefix
+        return '%s.%s' % (prefix, name)
     
     def _valuefromchain(self, chain, name, nameprefix,
                         default=None, checkbox=False):
@@ -192,7 +213,12 @@ class RequestMixin(object):
             if chained == REQUEST:
                 keys = self.request.form.keys()
             elif chained == COOKIE:
-                keys = self.request.cookies.keys()
+                cookieprefix = ICookiePrefix(self.context).prefix
+                keys = []
+                for key in self.request.cookies.keys():
+                    if key.startswith(cookieprefix):
+                        keys.append(key[len(cookieprefix) + 1:])
+                #keys = self.request.cookies.keys()
             elif chained == SESSION:
                 sessiondatamanager = self.context.session_data_manager
                 session = sessiondatamanager.getSessionData(create=False)

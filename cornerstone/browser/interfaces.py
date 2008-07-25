@@ -13,6 +13,19 @@ REQUEST = 1
 COOKIE = 2
 SESSION = 3
 
+class ICookiePrefix(Interface):
+    """A prefix provider for cookie keys.
+    
+    If some application state data is stored in cookies, a user logs off and
+    another logs in, the new logged in user works initially with the same
+    application state as the previous. To avoid this, all cookie referring
+    functions of IRequestMixin use this provider to get a prefix, normally the
+    userid, which is at least in one subsystem unique.
+    """
+    
+    prefix = Attribute(u'A unique prefix')
+
+
 class IRequestMixin(Interface):
     """A request helper mixin.
     
