@@ -9,6 +9,10 @@ __docformat__ = 'plaintext'
 from zope.interface import Interface
 from zope.interface import Attribute
 
+###############################################################################
+# Request related interfaces
+###############################################################################
+
 REQUEST = 1
 COOKIE = 2
 SESSION = 3
@@ -300,6 +304,9 @@ class IRequestDefaultValues(Interface):
         """Return item by name or default.
         """
 
+###############################################################################
+# Hotspot related interfaces
+###############################################################################
 
 class ConflictingHotspot(Exception):
     """Thrown if conflicting hotspot declarations are recognized for a resource.
@@ -340,4 +347,35 @@ class IHotspotCheck(Interface):
     
     def __call__():
         """Fire IHotspotHitEvent if a resource is recognized as hotspot.
+        """
+
+###############################################################################
+# Markup rendering related interfaces
+###############################################################################
+
+class ISelectionVocab(Interface):
+    """A vocabulary for a selection dropdown.
+    """
+    
+    def __call__():
+        """Return a vocab fitting the ``_selection()`` function of
+        IHTMLRenderer interface.
+        
+        @return - list of 3-tuples for a selection dropdown in the form
+                  ('key', 'value', 'bool_selected')
+        """
+
+class IHTMLRenderer(Interface):
+    """Mixin to render HTML Markup by functions instead of page templates.
+    This is useful if you want to avoid the page template rendering overhead.
+    """
+    
+    _div = Attribute(u"div tag string pattern")
+    
+    def _selection(self, name, css, vocab, multiple=False):
+        """Return markup for a selection.
+        
+        @param name - the name of the selection.
+        @param css - concatenated css classes for the selection
+        @param - vocab returned by ISelectionVocab's ``__call__()`` function.
         """
