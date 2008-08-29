@@ -31,7 +31,8 @@ class HTMLRendererMixin(object):
     
     def _tag(self, name_, value_, **kw):
         attrs = ' '.join('%s="%s"' % (key, value) for key, value in kw.items())
-        return """<%(name)s %(attrs)s>%(value)s</%(name)s>""" % {
+        attrs = attrs and ' %s' % attrs or ''
+        return '<%(name)s%(attrs)s>\n%(value)s\n</%(name)s>\n' % {
             'name': name_, 'attrs': attrs, 'value': value_,
         }
     
@@ -42,7 +43,7 @@ class HTMLRendererMixin(object):
             if term[2]:
                 kw['selected'] = 'selected'
             option = self._tag('option', term[1], **kw)
-            options = '%s\n%s' % (options, option)
+            options = '%s%s' % (options, option)
         kw = {'name': name, 'class': css}
         if multiple:
             kw['multiple'] = 'multiple'
