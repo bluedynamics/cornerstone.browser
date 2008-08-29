@@ -370,9 +370,16 @@ class IHTMLRenderer(Interface):
     This is useful if you want to avoid the page template rendering overhead.
     """
     
-    _div = Attribute(u"div tag string pattern")
+    def _tag(name_, value_, **kw):
+        """Return a rendered tag.
+        
+        @param name_ - the name of the tag
+        @param value_ - the content for the tag
+        @param **kw - keyword arguments defining the attributes of the tag
+        @return string - rendered tag
+        """
     
-    def _selection(self, name, css, vocab, multiple=False):
+    def _selection(name, css, vocab, multiple=False):
         """Return markup for a selection.
         
         @param name - the name of the selection.

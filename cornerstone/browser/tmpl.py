@@ -29,43 +29,25 @@ class HTMLRendererMixin(object):
     
     implements(IHTMLRenderer)
     
-    _div = """
-        <div class="%(css)s">%(content)s</div>
-    """
-    
-    def _selection(self, name, css, vocab, multiple=False):
-        if multiple:
-            selection = """
-                <select name="%(name)s" class="%(css)s" multiple="multiple">
-                    %(options)s
-                </select>
-            """
-        else:
-            selection = """
-                <select name="%(name)s" class="%(css)s">
-                    %(options)s
-                </select>
-            """
-        option = """
-            <option value="%(key)s">%(value)s</option>
-        """
-        optionselected = """
-            <option value="%(key)s" selected="selected">%(value)s</option>
-        """
-        options = ''
-        for term in vocab:
-            kw = {
-                'key': term[0],
-                'value': term[1],
-            }
-            opt = term[2] and (optionselected % kw) or (option % kw)
-            options = '%s\n%s' % (options, opt)
-        return selection % {
-            'name': name,
-            'css': css,
-            'options': options,
+    def _tag(self, name_, value_, **kw):
+        attrs = ' '.join('%s="%s"' % (key, value) for key, value in kw.items())
+        return """
+            <%(name)s %(attrs)s>%(value)s</%(name)s>
+        """ % {
+            'name': name_,
+            'attrs': attrs,
+            'value': value_,
         }
     
-    
-    
-    
+    def _selection(self, name, css, vocab, multiple=False):
+        options = ''
+        for term in vocab:
+            kw = {'value': term[0]}
+            if term[2]:
+                kw['selected'] = 'selected'
+            option = self._tag('option', term[1], **kw)
+            options = '%s\n%s' % (options, option)
+        kw = {'name': name, 'class': css}
+        if multiple:
+            kw['multiple'] = 'multiple'
+        return self._tag('select', options, **kw)
