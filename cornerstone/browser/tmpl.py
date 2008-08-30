@@ -37,8 +37,8 @@ class HTMLRendererMixin(object):
         attrs = ' '.join('%s="%s"' % (key.strip('_'), value) \
                                           for key, value in kw.items())
         attrs = attrs and ' %s' % attrs or ''
-        return '<%(name)s%(attrs)s>\n%(value)s\n</%(name)s>\n' % {
-            'name': name_, 'attrs': attrs, 'value': ' '.join(c for c in args),
+        return '<%(name)s%(attrs)s>%(value)s</%(name)s>' % {
+            'name': name_, 'attrs': attrs, 'value': ''.join(c for c in args),
         }
     
     def _selection(self, vocab_, **kw):
