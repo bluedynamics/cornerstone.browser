@@ -370,19 +370,22 @@ class IHTMLRenderer(Interface):
     This is useful if you want to avoid the page template rendering overhead.
     """
     
-    def _tag(name_, value_, **kw):
+    def _tag(name_, *args, **kw):
         """Return a rendered tag.
         
-        @param name_ - the name of the tag
-        @param value_ - the content for the tag
-        @param **kw - keyword arguments defining the attributes of the tag
-        @return string - rendered tag
+        @param name_ - the name of the tag.
+        @param *args - the content(s) for the tag.
+        @param **kw - keyword arguments defining the attributes of the tag.
+                      all leading and trailing ``_`` are stripped from key.
+        @return string - rendered tag.
         """
     
-    def _selection(name, css, vocab, multiple=False):
+    def _selection(vocab_, **kw):
         """Return markup for a selection.
         
-        @param name - the name of the selection.
-        @param css - concatenated css classes for the selection
-        @param - vocab returned by ISelectionVocab's ``__call__()`` function.
+        @param vocab_ - vocab returned by ISelectionVocab's ``__call__()``
+                        function.
+        @param **kw - keyword arguments defining the attributes of the
+                      selection. all leading and trailing ``_`` are stripped
+                      from key.
         """

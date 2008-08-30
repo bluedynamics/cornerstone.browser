@@ -22,6 +22,10 @@ class SelectionVocabBase(object):
     
     def __init__(self, context):
         self.context = context
+    
+    def __call__(self):
+        raise NotImplementedError(u"``__call__()`` must be implemented by "
+                                  "subclass")
 
 class HTMLRendererMixin(object):
     """IHTMLRenderer implementation
@@ -29,22 +33,20 @@ class HTMLRendererMixin(object):
     
     implements(IHTMLRenderer)
     
-    def _tag(self, name_, value_, **kw):
-        attrs = ' '.join('%s="%s"' % (key, value) for key, value in kw.items())
+    def _tag(self, name_, *args, **kw):
+        attrs = ' '.join('%s="%s"' % (key.strip('_'), value) \
+                                          for key, value in kw.items())
         attrs = attrs and ' %s' % attrs or ''
         return '<%(name)s%(attrs)s>\n%(value)s\n</%(name)s>\n' % {
-            'name': name_, 'attrs': attrs, 'value': value_,
+            'name': name_, 'attrs': attrs, 'value': ' '.join(c for c in args),
         }
     
-    def _selection(self, name, css, vocab, multiple=False):
-        options = ''
-        for term in vocab:
-            kw = {'value': term[0]}
+    def _selection(self, vocab_, **kw):
+        options = list()
+        for term in vocab_:
+            optkw = {'value': term[0]}
             if term[2]:
-                kw['selected'] = 'selected'
-            option = self._tag('option', term[1], **kw)
-            options = '%s%s' % (options, option)
-        kw = {'name': name, 'class': css}
-        if multiple:
-            kw['multiple'] = 'multiple'
-        return self._tag('select', options, **kw)
+                optkw['selected'] = 'selected'
+            option = self._tag('option', term[1], **optkw)
+            options.append(option)
+        return self._tag('select', *options, **kw)
