@@ -39,7 +39,7 @@ class HTMLRendererMixin(object):
             if value is None:
                 continue
             if not isinstance(value, unicode):
-                value = value.decode('utf-8')
+                value = str(value).decode('utf-8')
             attrlist.append((key, value))
         attrs = u' '.join(u'%s="%s"' % (key.strip('_'), value) \
                                           for key, value in attrlist)
