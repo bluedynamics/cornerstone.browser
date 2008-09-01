@@ -34,11 +34,25 @@ class HTMLRendererMixin(object):
     implements(IHTMLRenderer)
     
     def _tag(self, name_, *args, **kw):
-        attrs = ' '.join('%s="%s"' % (key.strip('_'), value) \
-                                          for key, value in kw.items())
-        attrs = attrs and ' %s' % attrs or ''
-        return '<%(name)s%(attrs)s>%(value)s</%(name)s>' % {
-            'name': name_, 'attrs': attrs, 'value': ''.join(c for c in args),
+        attrlist = list()
+        for key, value in kw.items():
+            if value is None:
+                continue
+            if not isinstance(value, unicode):
+                value = value.decode('utf-8')
+            attrlist.append((key, value))
+        attrs = u' '.join(u'%s="%s"' % (key.strip('_'), value) \
+                                          for key, value in attrlist)
+        attrs = attrs and u' %s' % attrs or u''
+        arglist = list()
+        for arg in args:
+            if not isinstance(arg, unicode):
+                arg = arg.decode('utf-8')
+            arglist.append(arg)
+        return u'<%(name)s%(attrs)s>%(value)s</%(name)s>' % {
+            'name': name_,
+            'attrs': attrs,
+            'value': u''.join(c for c in arglist),
         }
     
     def _selection(self, vocab_, **kw):
