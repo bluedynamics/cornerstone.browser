@@ -47,7 +47,7 @@ class HTMLRendererMixin(object):
         arglist = list()
         for arg in args:
             if not isinstance(arg, unicode):
-                arg = arg.decode('utf-8')
+                arg = str(arg).decode('utf-8')
             arglist.append(arg)
         return u'<%(name)s%(attrs)s>%(value)s</%(name)s>' % {
             'name': name_,
