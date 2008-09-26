@@ -11,10 +11,12 @@ from zope.component import adapter
 from zope.component import getUtilitiesFor
 from zope.event import notify
 
+from interfaces import REQUEST
 from interfaces import ConflictingHotspot
 from interfaces import IHotspot
 from interfaces import IHotspotCheck
 from interfaces import IHotspotHitEvent
+from interfaces import IHotspotBrowserView
 
 from base import XBrowserView
 
@@ -28,7 +30,6 @@ class HotspotHitEvent(object):
         self.context = context
         self.request = request
         self.hotspoturl = hotspoturl
-
 
 class Hotspot(object):
     """IHotspot implementation.
@@ -61,7 +62,6 @@ class Hotspot(object):
             else:
                 weight -= 1
         return weight
-
 
 class HotspotCheck(XBrowserView):
     """IHotspotCheck implementation.
@@ -112,13 +112,49 @@ class HotspotCheck(XBrowserView):
                                hotspoturl))
         return True
 
+class HotspotBrowserView(XBrowserView):
+    """IHotspotBrowserView implementation.
+    
+    Note: to make this class work you have to activate
+    ``writeHotspotUrlToRequest`` subscriber. See configure.zcml how to activate.
+    """
+    
+    implements(IHotspotBrowserView)
+    
+    @property
+    def hotspoturl(self):
+        return self.formvalue('hotspoturl')
+    
+    def makeUrl(self, context=None, url=None, resource=None, query=None):
+        if not query:
+            query = self.makeQuery()
+        return XBrowserView.makeUrl(self, context, url, resource, query)
+    
+    def makeQuery(self, additionals=None, ignores=None, considerexisting=False,
+                  considerspecific=None, nameprefix=False, chain=(REQUEST,)):
+        queryext = {
+            'hotspoturl': self.hotspoturl
+        }
+        if additionals:
+            additionals.update(queryext)
+        else:
+            additionals = queryext
+        return XBrowserView.makeQuery(self, additionals, ignores,
+                                      considerexisting, considerspecific,
+                                      nameprefix, chain)
 
 @adapter(IHotspotHitEvent)
 def writeHotspotUrlToCookie(event):
-    """Default IHotspotHitEvent subscriber.
-    
-    Write hotspot url to cookie.
+    """Write hotspot url to cookie.
     """
     request = event.request
     url = event.hotspoturl
     request.response.setCookie('hotspoturl', url, path='/')
+
+@adapter(IHotspotHitEvent)
+def writeHotspotUrlToRequest(event):
+    """Write hotspot url to request.
+    """
+    request = event.request
+    url = event.hotspoturl
+    request.form['hotspoturl'] = url

@@ -1,4 +1,4 @@
 cornerstone.browser
 ===================
 
-  TODO
+  Until this document is written see interfaces.py of this package for details.

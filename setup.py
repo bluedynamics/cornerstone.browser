@@ -9,7 +9,7 @@ __docformat__ = 'plaintext'
 from setuptools import setup, find_packages
 import sys, os
 
-version = '1.0 (svn)'
+version = '1.0.2 (svn)'
 shortdesc = "Common browser utils"
 longdesc = open(os.path.join(os.path.dirname(__file__), 'README.txt')).read()
 
@@ -29,7 +29,7 @@ setup(name='cornerstone.browser',
       keywords='',
       author='Robert Niedereiter',
       author_email='rnix@squarewave.at',
-      url='',
+      url='https://svn.plone.org/svn/collective/cornerstone.browser',
       license='General Public Licence',
       packages=find_packages(exclude=['ez_setup',]),
       namespace_packages=['cornerstone'],

@@ -29,7 +29,6 @@ class ICookiePrefix(Interface):
     
     prefix = Attribute(u'A unique prefix')
 
-
 class IRequestMixin(Interface):
     """A request helper mixin.
     
@@ -295,7 +294,6 @@ class IRequestMixin(Interface):
         @param url - the url to redirect to.
         """
 
-
 class IRequestDefaultValues(Interface):
     """Interface for providing default request values.
     """
@@ -312,7 +310,6 @@ class ConflictingHotspot(Exception):
     """Thrown if conflicting hotspot declarations are recognized for a resource.
     """
 
-
 class IHotspotHitEvent(Interface):
     """Fired when a resource was recognized as hotspot.
     """
@@ -322,7 +319,6 @@ class IHotspotHitEvent(Interface):
     request = Attribute(u"Request object")
     
     hotspoturl = Attribute(u"URL defining the hotspot")
-
 
 class IHotspot(Interface):
     """Interface for the hotspot utilities
@@ -340,13 +336,24 @@ class IHotspot(Interface):
         """Return the weight of object for this hotspot.
         """
 
-
 class IHotspotCheck(Interface):
     """Interface to check hotspots.
     """
     
     def __call__():
         """Fire IHotspotHitEvent if a resource is recognized as hotspot.
+        """
+
+class IHotspotBrowserView(IRequestMixin):
+    """Extension of IRequestMixin to consider hotspoturl in ``makeUrl`` and
+    providing the hotspoturl on self.
+    """
+    
+    hotspoturl = Attribute('The current valid hotspoturl')
+    
+    def makeUrl(context=None, url=None, resource=None, query=None):
+        """Same behaviour as ``makeUrl`` of IRequestMixin except that
+        hotspoturl is considered.
         """
 
 ###############################################################################

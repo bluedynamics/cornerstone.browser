@@ -20,6 +20,14 @@
 	  permission="zope.Public"
 	/>
 	
+	<!-- subscriber writing the hotspoturl to a cookie -->
+	<!--
 	<subscriber handler=".hotspot.writeHotspotUrlToCookie" />
+	-->
+	
+	<!-- subscriber writing the hotspoturl to the request -->
+	<!--
+	<subscriber handler=".hotspot.writeHotspotUrlToRequest" />
+	-->
 
 </configure>
