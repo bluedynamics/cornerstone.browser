@@ -15,6 +15,8 @@ from zope.app.publisher.interfaces.browser import IBrowserMenu
 from zope.app.publisher.browser.menu import BrowserMenu
 from zope.app.publisher.browser.menu import BrowserMenuItem
 
+from base import RequestMixin
+
 class MenuBase(BrowserMenu):
     """Abstract BrowserMenu implementation.
     """
@@ -27,6 +29,11 @@ class MenuBase(BrowserMenu):
     
     def _getMenuItems(self, object, request, iface):
         """TODO: think wether availability should be checked here or not.
+        
+        @param object: the lookup context
+        @param request: the request
+        @param iface: the menu item interface to lookup
+        @return: list containing IBrowserMenuItem implementing instances
         """
         adapters = getAdapters((object, request), iface)
         items = list()
@@ -35,7 +42,7 @@ class MenuBase(BrowserMenu):
         items.sort(cmp=lambda x, y: x.order > y.order and 1 or -1)
         return items
 
-class MenuItemBase(BrowserMenuItem):
+class MenuItemBase(BrowserMenuItem, RequestMixin):
     """Abstract base menu item.
     """
     adapts(Interface, IBrowserRequest)
