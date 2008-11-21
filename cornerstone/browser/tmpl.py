@@ -7,7 +7,7 @@
 # XXX: This module is some kind of experimental.
 #
 # the reason for using this module is the need of rendering lots (100+) browser
-# views in one request. when doung this via bound templates we have a huge
+# views in one request. when doing this via bound templates we have a huge
 # overhead with page templates due to parsing and restricted python
 #
 
