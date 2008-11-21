@@ -2,6 +2,14 @@
 # Copyright 2008, Blue Dynamics Alliance, Austria - http://bluedynamics.com
 #
 # GNU General Public Licence Version 2 or later
+#
+#
+# XXX: This module is some kind of experimental.
+#
+# the reason for using this module is the need of rendering lots (100+) browser
+# views in one request. when doung this via bound templates we have a huge
+# overhead with page templates due to parsing and restricted python
+#
 
 __author__ = """Robert Niederreiter <rnix@squarewave.at>"""
 __docformat__ = 'plaintext'
