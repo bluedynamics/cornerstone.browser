@@ -9,8 +9,8 @@ __docformat__ = 'plaintext'
 from setuptools import setup, find_packages
 import sys, os
 
-version = '1.0.2 (svn)'
-shortdesc = "Common browser utils"
+version = '1.0.3'
+shortdesc = "Common browser utils for ZOPE"
 longdesc = open(os.path.join(os.path.dirname(__file__), 'README.txt')).read()
 
 setup(name='cornerstone.browser',
