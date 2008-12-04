@@ -9,7 +9,7 @@ __docformat__ = 'plaintext'
 from setuptools import setup, find_packages
 import sys, os
 
-version = '1.0.4 (svn)'
+version = '1.1'
 shortdesc = "Common browser utils for ZOPE"
 longdesc = open(os.path.join(os.path.dirname(__file__), 'README.txt')).read()
 
@@ -18,7 +18,7 @@ setup(name='cornerstone.browser',
       description=shortdesc,
       long_description=longdesc,
       classifiers=[
-            'Development Status :: 4 - Beta',
+            'Development Status :: 5 - Production/Stable',
             'Environment :: Web Environment',
             'Framework :: Zope2',
             'License :: OSI Approved :: GNU General Public License (GPL)',

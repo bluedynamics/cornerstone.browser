@@ -8,6 +8,8 @@ __docformat__ = 'plaintext'
 
 import types
 
+from urlparse import urlsplit
+
 from sets import Set
 
 from zope.interface import implements
@@ -23,6 +25,7 @@ from interfaces import REQUEST, COOKIE, SESSION
 from interfaces import ICookiePrefix
 from interfaces import IRequestMixin
 from interfaces import IRequestDefaultValues
+from interfaces import IAjaxMixin
 
 EMPTYMARKER = []
 
@@ -268,6 +271,22 @@ class RequestMixin(object):
         except ComponentLookupError, e: pass
         return defaultvalues
 
+class AjaxMixin(object):
+    """IAjaxMixin implementation.
+    """
+    
+    implements(IAjaxMixin)
+    
+    def initializeFormByHyperlink(self, href):
+        href = href.replace('&#38;', '&') # safari stuff
+        query = urlsplit(href)[3]
+        parts = query.split('&')
+        for part in parts:
+            param, value = part.split('=')
+            # XXX: improve by zopes parsing mechanisms e.g. ``int:foo=1``
+            if param.find(':') != -1:
+                param = param[:param.find(':')]
+            self.request.form[param] = value
 
 class RequestTool(RequestMixin):
     """Derived from RequestMixin, it provides simply the required signature.
@@ -280,4 +299,8 @@ class RequestTool(RequestMixin):
 
 class XBrowserView(BrowserView, RequestMixin):
     """An extended BrowserView providing the RequestMixin functions.
+    """
+
+class AjaxBrowserView(XBrowserView, AjaxMixin):
+    """Browser view to be used for ajax operations.
     """

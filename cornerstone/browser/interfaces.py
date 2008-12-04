@@ -302,6 +302,17 @@ class IRequestDefaultValues(Interface):
         """Return item by name or default.
         """
 
+class IAjaxMixin(Interface):
+    """Ajax helper mixin interface.
+    """
+    
+    def initializeFormByHyperlink(href):
+        """Take the query from a hyperlink and initialize self.request.form
+        with the query params.
+        
+        @param href: the hyperlink.
+        """
+
 ###############################################################################
 # Hotspot related interfaces
 ###############################################################################
