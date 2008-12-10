@@ -30,12 +30,12 @@ from interfaces import IAjaxMixin
 EMPTYMARKER = []
 
 class CookiePrefix(object):
-    
+
     implements(ICookiePrefix)
-    
+
     def __init__(self, context):
         self.context = context
-    
+
     @property
     def prefix(self):
         prefix = getSecurityManager().getUser().getId()
@@ -46,19 +46,19 @@ class CookiePrefix(object):
 class RequestMixin(object):
     """IRequestMixin implementation.
     """
-    
+
     implements(IRequestMixin)
-    
+
     nameprefix = None
     checkboxpostfix = 'cb'
-    
+
     def writeFormData(self, additionals=None, ignores=None,
                       considerexisting=False, considerspecific=None,
                       nameprefix=False, checkboxes=[], writechain=(COOKIE,)):
         params = self._chaindata(additionals, ignores, considerexisting,
                                  considerspecific, nameprefix, chain=chain)
         # TODO
-    
+
     def makeUrl(self, context=None, url=None, resource=None, query=None):
         if url and context:
             raise ValueError, 'Need either context or url, both was given.'
@@ -71,13 +71,13 @@ class RequestMixin(object):
         if query:
             url = '%s?%s' % (url, query)
         return url
-    
+
     def makeQuery(self, additionals=None, ignores=None, considerexisting=False,
                   considerspecific=None, nameprefix=False, chain=(REQUEST,)):
         params = self._chaindata(additionals, ignores, considerexisting,
                                  considerspecific, nameprefix, chain=chain)
         return make_query(params)
-    
+
     def formvalue(self, name, default=None, checkbox=False, nameprefix=False):
         if checkbox:
             value = self.formvalue(name, default, nameprefix=nameprefix)
@@ -89,21 +89,21 @@ class RequestMixin(object):
                 return False
             return default
         return self.request.form.get(self._name(name, nameprefix), default)
-    
+
     def cookievalue(self, name, default=None, nameprefix=False):
         return self.request.cookies.get(self._cookiename(name, nameprefix),
                                         default)
-    
+
     def sessionvalue(self, name, default=None, nameprefix=False):
         session = self.context.session_data_manager.getSessionData(create=False)
         if not session:
             return default
         return session.get(self._name(name, nameprefix), default)
-    
+
     def requestvalue(self, name, default=None, checkbox=False,
                      chain=(REQUEST, COOKIE), nameprefix=False):
         return self._valuefromchain(chain, name, nameprefix, default, checkbox)
-    
+
     def xrequestvalue(self, name, default=None, checkbox=False,
                       chain=(REQUEST, COOKIE), nameprefix=False):
         value = self.requestvalue(name, EMPTYMARKER, checkbox,
@@ -115,7 +115,7 @@ class RequestMixin(object):
         if value is EMPTYMARKER:
             return default
         return value
-    
+
     def selected(self, name, value, cookiewins=False, nameprefix=False):
         """selected() is deprecated, will be removed in version 2.0.
         """
@@ -123,31 +123,31 @@ class RequestMixin(object):
             requested = self.cookievalue(name, nameprefix=nameprefix)
             if not requested:
                 requested = self.formvalue(name, nameprefix=nameprefix)
-        else:   
+        else:
             requested = self.formvalue(name, nameprefix=nameprefix)
         return self._checkrequestedvalue(requested, value)
-    
+
     def formselected(self, name, value, nameprefix=False):
         requested = self.formvalue(name, nameprefix=nameprefix)
         return self._checkrequestedvalue(requested, value)
-    
+
     def cookieselected(self, name, value, nameprefix=False):
         requested = self.cookievalue(name, nameprefix=nameprefix)
         return self._checkrequestedvalue(requested, value)
-    
+
     def sessionselected(self, name, value, nameprefix=False):
         session = self.context.session_data_manager.getSessionData(create=False)
         if not session:
             return False
         requested = session.get(self._name(name, nameprefix))
         return self._checkrequestedvalue(requested, value)
-    
+
     def requestselected(self, name, value,
                         chain=(REQUEST, COOKIE),
                         nameprefix=False):
         requested = self._valuefromchain(chain, name, nameprefix)
         return self._checkrequestedvalue(requested, value)
-    
+
     def xrequestselected(self, name, value,
                          chain=(REQUEST, COOKIE),
                          nameprefix=False):
@@ -160,30 +160,30 @@ class RequestMixin(object):
         if requested is EMPTYMARKER:
             return False
         return self._checkrequestedvalue(requested, value)
-    
+
     def cookieset(self, name, value, path='/', nameprefix=False):
         self.request.response.setCookie(self._cookiename(name, nameprefix),
                                         value, path=path)
-    
+
     def sessionset(self, name, value, nameprefix=False):
         session = self.context.session_data_manager.getSessionData(create=True)
         session[self._name(name, nameprefix)] = value
-    
+
     def redirect(self, url):
         self.request.response.redirect(url)
-        
+
     def _name(self, name, nameprefix=False):
         if nameprefix is False:
             nameprefix = self.nameprefix
         if nameprefix:
             return '%s.%s' % (nameprefix, name)
         return name
-    
+
     def _cookiename(self, name, nameprefix):
         name = self._name(name, nameprefix)
         prefix = ICookiePrefix(self.context).prefix
         return '%s.%s' % (prefix, name)
-    
+
     def _valuefromchain(self, chain, name, nameprefix,
                         default=None, checkbox=False):
         value = EMPTYMARKER
@@ -203,7 +203,7 @@ class RequestMixin(object):
         if value is EMPTYMARKER:
             return default
         return value
-    
+
     def _checkrequestedvalue(self, requested, value):
         if type(requested) == types.ListType:
             if value in requested:
@@ -211,7 +211,7 @@ class RequestMixin(object):
         if value == requested:
             return True
         return False
-    
+
     def _chainkeys(self, chain):
         chainkeys = Set()
         for chained in chain:
@@ -232,9 +232,10 @@ class RequestMixin(object):
                 else:
                     keys = session.keys()
             for key in keys:
+                ### TODO: chainedkeys not defined -> chainkeys??? write test case for this.
                 chainedkeys.add(key)
         return chainedkeys
-    
+
     def _chaindata(self, additionals=None, ignores=None, considerexisting=False,
                    considerspecific=None, nameprefix=False, chain=[]):
         params = {}
@@ -259,7 +260,7 @@ class RequestMixin(object):
                 prefixedadditionals[name] = additionals[key]
             params.update(prefixedadditionals)
         return params
-    
+
     @property
     def _defaultvalues(self):
         defaultvalues = None
@@ -276,9 +277,9 @@ class RequestMixin(object):
 class AjaxMixin(object):
     """IAjaxMixin implementation.
     """
-    
+
     implements(IAjaxMixin)
-    
+
     def initializeFormByHyperlink(self, href):
         href = href.replace('&#38;', '&') # safari stuff
         query = urlsplit(href)[3]
@@ -293,7 +294,7 @@ class AjaxMixin(object):
 class RequestTool(RequestMixin):
     """Derived from RequestMixin, it provides simply the required signature.
     """
-    
+
     def __init__(self, context, request):
         self.context = context
         self.request = request
