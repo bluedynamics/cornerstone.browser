@@ -6,7 +6,8 @@ Tests for our request mixin class
 ---------------------------------
 
 Create test request and write some stuff on it. Read on to get what this is
-all about.
+all about. Consider that cookies are prefixed by username (or 'anonymoususer' if
+not authenticated), so we have to set this explicit on our test request.
 
     >>> from zope.publisher.browser import TestRequest
     >>> request = TestRequest()
@@ -23,8 +24,8 @@ all about.
     ...     request.form['cb1_cb'] = '1'
     ...     request.form['cb2'] = False
     ...     request.form['cb2_cb'] = '1'
-    ...     request._cookies['p1'] = 'c1'
-    ...     request._cookies['p2'] = 'c2'
+    ...     request._cookies['anonymoususer.p1'] = 'c1'
+    ...     request._cookies['anonymoususer.p2'] = 'c2'
     
     >>> initRequest(request)
     
@@ -36,7 +37,7 @@ all about.
     >>> keys = request.cookies.keys()
     >>> keys.sort()
     >>> keys
-    ['p1', 'p2']
+    ['anonymoususer.p1', 'anonymoususer.p2']
 
 Create dummy item.
 
@@ -81,7 +82,7 @@ Test base read and write functions.
     >>> rtool.sessionset('p1', 's1')
     >>> rtool.cookieset('p99', 'c99')
     >>> rtool.request.response._cookies
-    {'p99': {'path': '/', 'value': 'c99'}}
+    {'anonymoususer.p99': {'path': '/', 'value': 'c99'}}
     
     >>> rtool.sessionvalue('p1')
     's1'
@@ -107,7 +108,7 @@ Lets check the same stuff when nameprefix is set on rtool.
     
   Same for cookies
   
-    >>> rtool.request._cookies['test.p1'] = '_c1'
+    >>> rtool.request._cookies['anonymoususer.test.p1'] = '_c1'
     >>> rtool.cookievalue('p1', nameprefix=None)
     'c1'
     

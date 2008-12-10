@@ -38,8 +38,10 @@ class CookiePrefix(object):
     
     @property
     def prefix(self):
-        return getSecurityManager().getUser().getId()
-
+        prefix = getSecurityManager().getUser().getId()
+        if not prefix:
+            prefix = 'anonymoususer'
+        return prefix
 
 class RequestMixin(object):
     """IRequestMixin implementation.
