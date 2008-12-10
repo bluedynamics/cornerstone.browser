@@ -1,0 +1,7 @@
+Test for the ''tmpl'' - simple, but fast templates in pythgon.
+
+
+>>> from cornerstone.browser.tmpl import HTMLRendererMixin
+>>> renderer = HTMLRendererMixin()
+
+>> interact(locals())

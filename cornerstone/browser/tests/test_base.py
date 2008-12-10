@@ -6,42 +6,35 @@
 __author__ = """Robert Niederreiter <rnix@squarewave.at>"""
 __docformat__ = 'plaintext'
 
-import unittest
-
-import zope.app.component
-import zope.app.publisher
-
-import Products.Five
-
 from pprint import pprint
-
-#from zope.testing.doctestunit import DocFileSuite
-
-from interact import interact
-
-#import cornerstone.browser
-
+import unittest
 from zope.testing import doctest
 from zope.app.testing.placelesssetup import setUp, tearDown
 from zope.configuration.xmlconfig import XMLConfig
+from interact import interact
 
 optionflags = doctest.NORMALIZE_WHITESPACE | \
-              doctest.ELLIPSIS | \
-              doctest.REPORT_ONLY_FIRST_FAILURE
+              doctest.ELLIPSIS # | \
+              #doctest.REPORT_ONLY_FIRST_FAILURE
 
 TESTFILES = [
-    '../base.txt',
+    'base.txt',
+    'tmpl.txt'
 ]
 
 def test_suite():
     setUp()
+    import zope.app.component
     XMLConfig('meta.zcml', zope.app.component)()
+    #import Products.Five
     #XMLConfig('meta.zcml', Products.Five)()
-    #XMLConfig('configure.zcml', cornerstone.browser)()
+    import cornerstone.browser
+    XMLConfig('base.zcml', cornerstone.browser)()
     
     return unittest.TestSuite([
         doctest.DocFileSuite(
             file, 
+            package="cornerstone.browser",
             optionflags=optionflags,
             globs={'interact': interact,
                    'pprint': pprint},

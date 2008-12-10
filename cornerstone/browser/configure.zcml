@@ -5,12 +5,8 @@
 	<five:registerPackage package="." initialize=".initialize" />
 
 	<include file="meta.zcml" />
-	<include file="profile.zcml" />
-	
-	<adapter
-	  for="*"
-	  factory=".base.CookiePrefix"
-	/>
+    <include file="profile.zcml" />
+    <include file="base.zcml" />
 	
 	<browser:page
 	  for="*"
