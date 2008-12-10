@@ -54,10 +54,6 @@ class HTMLRendererMixin(object):
         attrs = attrs and u' %s' % attrs or u''
         arglist = list()
         for arg in args:
-            # maybe we want false here to be displayed, but i think its better
-            # to expect a string if someone might force to diplay it.
-            if not arg:
-                continue
             if not isinstance(arg, unicode):
                 arg = str(arg).decode('utf-8')
             arglist.append(arg)

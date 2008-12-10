@@ -17,7 +17,12 @@ Tag with contained text
     >>> renderer._tag('div', 'Lorem Ipsum.')
     u'<div>Lorem Ipsum.</div>'
 
-Tag with containes text
+Tag with empty contained text
+
+    >>> renderer._tag('div', '')
+    u'<div></div>'
+
+Tag with contained text
 
     >>> renderer._tag('a', 'Lorem Ipsum.', href='http://zope.org')
     u'<a href="http://zope.org">Lorem Ipsum.</a>'
