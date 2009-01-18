@@ -8,5 +8,19 @@
              expression="object/@@hotspot"
              id="cornerstone_hotspot.js"
              inline="False"/>
+ 
+ <javascript cacheable="True"
+             compression="safe"
+             cookable="True"
+             enabled="True"
+             id="++resource++cornerstone.browser.js/cornerstone.js"
+             inline="False"/>
+ 
+ <javascript cacheable="True"
+             compression="safe"
+             cookable="True"
+             enabled="True"
+             id="++resource++cornerstone.browser.js/cornerstone.ajax.js"
+             inline="False"/>
 
 </object>

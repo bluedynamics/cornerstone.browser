@@ -312,9 +312,17 @@ class IAjaxMixin(Interface):
         
         @param href: the hyperlink.
         """
+    
+    def ajaxresponse(state=1, payload='', error=''):
+        """Create Response for ajax Request which can be handled by
+        cornerstone.ajax.* javascript stuff.
+        """
 
 ###############################################################################
 # Hotspot related interfaces
+#
+# Deprecated: The hotspot stuff will be moved into seperate package until
+#             Version 1.4 of this package.
 ###############################################################################
 
 class ConflictingHotspot(Exception):

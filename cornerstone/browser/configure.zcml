@@ -7,6 +7,11 @@
 	<include file="meta.zcml" />
     <include file="profile.zcml" />
     <include file="base.zcml" />
+    
+    <browser:resourceDirectory
+      name="cornerstone.browser.js"
+      directory="js"
+    />
 	
 	<browser:page
 	  for="*"

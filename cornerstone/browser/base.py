@@ -27,6 +27,8 @@ from interfaces import IRequestMixin
 from interfaces import IRequestDefaultValues
 from interfaces import IAjaxMixin
 
+from tmpl import HTMLRendererMixin
+
 EMPTYMARKER = []
 
 class CookiePrefix(object):
@@ -290,6 +292,12 @@ class AjaxMixin(object):
             if param.find(':') != -1:
                 param = param[:param.find(':')]
             self.request.form[param] = value
+    
+    def ajaxresponse(self, state=1, payload='', error=''):
+        state = self._tag('span', str(state), class_='responsestate')
+        payload = self._tag('span', payload, class_='responsepayload')
+        error = self._tag('span', error, class_='responseerror')
+        return self._tag('span', state, payload, error, class_='response')
 
 class RequestTool(RequestMixin):
     """Derived from RequestMixin, it provides simply the required signature.
