@@ -8,9 +8,14 @@
     <include file="profile.zcml" />
     <include file="base.zcml" />
     
-    <browser:resourceDirectory
-      name="cornerstone.browser.js"
-      directory="js"
+    <browser:resource
+      name="cornerstone.js"
+      file="js/cornerstone.js"
+    />
+    
+    <browser:resource
+      name="cornerstone.ajax.js"
+      file="js/cornerstone.ajax.js"
     />
 	
 	<browser:page
