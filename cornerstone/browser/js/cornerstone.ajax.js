@@ -32,6 +32,7 @@ cornerstone.ajax.Response.prototype.delegate = function(request, handler) {
 		return;
 	}
     handler(request, this);
+    // XXX: throw Event
 }
 /* An Ajax Request.
  * 
