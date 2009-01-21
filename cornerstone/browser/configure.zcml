@@ -5,8 +5,12 @@
 	<five:registerPackage package="." initialize=".initialize" />
 
 	<include file="meta.zcml" />
-    <include file="profile.zcml" />
     <include file="base.zcml" />
+    
+    <browser:resource
+      name="jquery-1.2.6.js"
+      file="js/jquery-1.2.6.js"
+    />
     
     <browser:resource
       name="cornerstone.js"
