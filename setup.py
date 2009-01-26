@@ -31,16 +31,23 @@ setup(name='cornerstone.browser',
       author_email='rnix@squarewave.at',
       url='https://svn.plone.org/svn/collective/cornerstone.browser',
       license='General Public Licence',
-      packages=find_packages(exclude=['ez_setup',]),
+      packages=find_packages('src'),
+      package_dir = {'': 'src'},
       namespace_packages=['cornerstone'],
       include_package_data=True,
       zip_safe=False,
       install_requires=[
-          'setuptools',                        
-          # -*- Extra requirements: -*
+          'setuptools',         
+          # several zope eggs missing, coming soon
       ],
+      extras_require={
+          'test': [
+              'interlude',
+              'zope.testing',
+              'zope.app.testing'
+          ]
+      },      
       entry_points="""
-      # -*- Entry points: -*-
       """,
       )
 

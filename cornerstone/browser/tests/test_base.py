@@ -7,11 +7,11 @@ __author__ = """Robert Niederreiter <rnix@squarewave.at>"""
 __docformat__ = 'plaintext'
 
 from pprint import pprint
+import interlude
 import unittest
 from zope.testing import doctest
 from zope.app.testing.placelesssetup import setUp, tearDown
 from zope.configuration.xmlconfig import XMLConfig
-from interact import interact
 
 optionflags = doctest.NORMALIZE_WHITESPACE | \
               doctest.ELLIPSIS # | \
@@ -36,8 +36,7 @@ def test_suite():
             file, 
             package="cornerstone.browser",
             optionflags=optionflags,
-            globs={'interact': interact,
-                   'pprint': pprint},
+            globs=dict(interact=interlude.interact, pprint=pprint),
         ) for file in TESTFILES
     ])
     tearDown()
