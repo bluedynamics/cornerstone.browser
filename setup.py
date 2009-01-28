@@ -27,7 +27,7 @@ setup(name='cornerstone.browser',
             'Topic :: Internet :: WWW/HTTP :: Dynamic Content',            
       ], # Get strings from http://www.python.org/pypi?%3Aaction=list_classifiers
       keywords='',
-      author='Robert Niedereiter',
+      author='Robert Niederreiter',
       author_email='rnix@squarewave.at',
       url='https://svn.plone.org/svn/collective/cornerstone.browser',
       license='General Public Licence',
@@ -37,14 +37,14 @@ setup(name='cornerstone.browser',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
-          'setuptools',         
-          # several zope eggs missing, coming soon
+          'setuptools', 
+          'Products.CMFCore', # only needed for hotspot.js !        
+          # several zope eggs missing, coming soon (atm fake-eggs
       ],
       extras_require={
           'test': [
               'interlude',
-              'zope.testing',
-              'zope.app.testing'
+              # several zope eggs missing, coming soon (atm fake-eggs            
           ]
       },      
       entry_points="""
