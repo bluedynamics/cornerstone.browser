@@ -7,61 +7,6 @@ Common Browser utilities and Helpers for Zope.
 The package cornerstone.browser is a collection of utilities and helpers for work
 with Zope browser views.
 
-
-cornerstone.browser.base
-========================
-
-This package provides some convenience classes for use with or instead of
-Zope3's BrowserView.
-
-
-------------------
-class RequestMixin
-------------------
-
-This mixin class provides convenience methods for form-data handling.
-
-
-def writeFormData
------------------
-
-
-
-
-
-
-_chainkeys
-### TODO: chainedkeys not defined -> chainkeys??? write test case for this.
-
-
-cornerstone.browser.exportimport
-================================
-
-
-cornerstone.browser.hotspot
-===========================
-
-
-cornerstone.browser.menu
-========================
-
-cornerstone.browser.renderer
-============================
-
-cornerstone.browser.tmpl
-========================
-
-
-
-
-
-
-
-
-A full documentation with examples will be provided soon, below the
-interfaces. Contact me for further information or if you want to contribute.
-For Discussion and Comments please use the Zope or Plone Developers Mailing List.
-
 ::
 
 	###############################################################################
