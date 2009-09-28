@@ -33,6 +33,20 @@ class FormRenderer(XBrowserView, HTMLRendererMixin):
                             value=value)
         return self.wraperror(name, payload)
     
+    def checkboxinput(self, name):
+        value = self.formvalueordefault(name)
+        cb = self.formvalueordefault('%s_cb' % name)
+        cbkw = {
+            'type': 'checkbox',
+            'name': name,
+            'value': value,
+        }
+        if cb and value:
+            cbkw['selected'] = 'selected'
+        cbinput = self._tag('input', **cbkw)
+        cbmarker = self.hiddeninput('%s_cb' % name, '1')
+        return self.wraperror(name, '\n'.join([cbinput, cbmarker]))
+    
     def textareainput(self, name, **kw):
         value = self.formvalueordefault(name)
         if not value:
