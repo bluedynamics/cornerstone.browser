@@ -11,6 +11,8 @@ from renderer import RendererBase
 from tmpl import SelectionVocabBase
 from tmpl import HTMLRendererMixin
 
+from form import FormRenderer
+
 from Products.CMFCore import DirectoryView
 DirectoryView.registerDirectory('cornerstone_browser', globals())
 
