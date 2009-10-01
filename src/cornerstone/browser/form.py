@@ -33,6 +33,10 @@ class FormRenderer(XBrowserView, HTMLRendererMixin):
                             value=value)
         return self.wraperror(name, payload)
     
+    def selectioninput(self, name, vocab):
+        payload = self._selection(vocab, name=name)
+        return self.wraperror(name, payload)
+    
     def checkboxinput(self, name):
         value = self.formvalueordefault(name)
         cb = self.formvalueordefault('%s_cb' % name)
