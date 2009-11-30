@@ -72,6 +72,8 @@ class FormRenderer(XBrowserView, HTMLRendererMixin):
     
     def displayinput(self, name):
         value = self.formvalueordefault(name)
+        if value is None:
+            return u''
         return self._tag('span',
                          self._tag('span', value),
                          self.hiddeninput(name, value),
