@@ -1,3 +1,4 @@
+from ZPublisher.HTTPRequest import FileUpload
 from base import XBrowserView
 from tmpl import HTMLRendererMixin
 
@@ -67,6 +68,12 @@ class FormRenderer(XBrowserView, HTMLRendererMixin):
                             name=name)
         return self.wraperror(name, payload)
     
+    def fileinput(self, name):
+        payload = self._tag('input',
+                            type='file',
+                            name=name)
+        return self.wraperror(name, payload)
+    
     def hiddeninput(self, name, value):
         return self._tag('input', type='hidden', name=name, value=value)
     
@@ -122,7 +129,8 @@ class FormRenderer(XBrowserView, HTMLRendererMixin):
         params = dict()
         params.update(self.request.form)
         for key in params.keys():
-            params[key] = params[key].decode('utf-8')
+            if not isinstance(params[key], FileUpload):
+                params[key] = params[key].decode('utf-8')
         self.form = self.factory(data=self.defaultvalues,
                                  params=params,
                                  prefix=self.formname)
