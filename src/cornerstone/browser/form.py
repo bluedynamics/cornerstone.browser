@@ -52,6 +52,18 @@ class FormRenderer(XBrowserView, HTMLRendererMixin):
         cbmarker = self.hiddeninput('%s_cb' % name, '1')
         return self.wraperror(name, '\n'.join([cbinput, cbmarker]))
     
+    def radioinput(self, name, value):
+        default = self.formvalueordefault(name)
+        cbkw = {
+            'type': 'radio',
+            'name': name,
+            'value': value,
+        }
+        if default == value:
+            cbkw['checked'] = 'checked'
+        payload = self._tag('input', **cbkw)
+        return self.wraperror(name, payload)
+    
     def textareainput(self, name, **kw):
         value = self.formvalueordefault(name)
         if not value:
