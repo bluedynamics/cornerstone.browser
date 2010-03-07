@@ -142,7 +142,7 @@ class FormRenderer(XBrowserView, HTMLRendererMixin):
         params = dict()
         params.update(self.request.form)
         for key in params.keys():
-            if not isinstance(params[key], FileUpload):
+            if isinstance(params[key], basestring):
                 params[key] = params[key].decode('utf-8')
         self.form = self.factory(data=self.defaultvalues,
                                  params=params,
