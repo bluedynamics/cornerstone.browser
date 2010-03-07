@@ -133,8 +133,9 @@ class FormRenderer(XBrowserView, HTMLRendererMixin):
         self.succeed = False
         self.processform()
         if self.succeed:
-            self.redirect(self.nexturl)
-            return
+            if self.nexturl:
+                self.redirect(self.nexturl)
+                return
         return self.template()
     
     def processform(self):
