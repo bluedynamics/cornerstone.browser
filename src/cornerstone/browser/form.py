@@ -34,20 +34,31 @@ class FormRenderer(XBrowserView, HTMLRendererMixin):
                             value=value)
         return self.wraperror(name, payload)
     
-    def selectioninput(self, name, vocab):
-        payload = self._selection(vocab, name=name)
+    def selectioninput(self, name, vocab, multiple=None):
+        if multiple:
+            payload = self._selection(vocab, name=name, multiple='multiple')
+        else:
+            payload = self._selection(vocab, name=name)
         return self.wraperror(name, payload)
     
-    def checkboxinput(self, name):
-        value = self.formvalueordefault(name)
+    def checkboxinput(self, name, value=None):
+        fod = self.formvalueordefault(name)
         cb = self.formvalueordefault('%s_cb' % name)
+        if not value:
+            if isinstance(fod, list):
+                raise ValueError(u'could not set default value')
+            else:
+                value = fod
         cbkw = {
             'type': 'checkbox',
             'name': name,
             'value': value,
         }
-        if cb and value:
-            cbkw['selected'] = 'selected'
+        if not isinstance(fod, list):
+            fod = [fod]
+        cb = self.formvalueordefault('%s_cb' % name)
+        if cb and value in fod:
+            cbkw['checked'] = 'checked'
         cbinput = self._tag('input', **cbkw)
         cbmarker = self.hiddeninput('%s_cb' % name, '1')
         return self.wraperror(name, '\n'.join([cbinput, cbmarker]))
