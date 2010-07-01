@@ -109,15 +109,19 @@ class FormRenderer(XBrowserView, HTMLRendererMixin):
                          self.hiddeninput(name, value),
                          class_='displayinput')
     
-    def renderedaction(self, name):
+    def renderedaction(self, name, multisubmit=False):
         if name == 'default':
             fieldname = self.formname
         else:
             fieldname = '%s.%s' % (self.formname, name)
+        if multisubmit:
+            class_ = 'formaction allowMultiSubmit'
+        else:
+            class_ = 'formaction'
         return self._tag('input',
                          type='submit',
                          name=fieldname,
-                         _class='formaction',
+                         _class=class_,
                          value=self.actionnames.get(name, name))
     
     def wraperror(self, name, payload):
