@@ -1,3 +1,4 @@
+import urllib
 from ZPublisher.HTTPRequest import FileUpload
 from base import XBrowserView
 from tmpl import HTMLRendererMixin
@@ -142,6 +143,8 @@ class FormRenderer(XBrowserView, HTMLRendererMixin):
             value = self.request.form.get(name, None)
         if not value:
             value = self.defaultvalues.get(name, None)
+        if isinstance(value, basestring):
+            return urllib.unquote(value)
         return value
     
     def __call__(self):

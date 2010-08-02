@@ -7,6 +7,7 @@ __author__ = """Robert Niederreiter <rnix@squarewave.at>"""
 __docformat__ = 'plaintext'
 
 import types
+import urllib
 
 from urlparse import urlsplit
 
@@ -84,13 +85,18 @@ class RequestMixin(object):
         if checkbox:
             value = self.formvalue(name, default, nameprefix=nameprefix)
             if value:
+                if isinstance(value, basestring):
+                    return urllib.unquote(value)
                 return value
             cbname = '%s_%s' % (name, self.checkboxpostfix)
             cb = self.formvalue(cbname, default, nameprefix=nameprefix)
             if cb:
                 return False
             return default
-        return self.request.form.get(self._name(name, nameprefix), default)
+        value = self.request.form.get(self._name(name, nameprefix), default)
+        if isinstance(value, basestring):
+            return urllib.unquote(value)
+        return value
 
     def cookievalue(self, name, default=None, nameprefix=False):
         return self.request.cookies.get(self._cookiename(name, nameprefix),
@@ -204,6 +210,8 @@ class RequestMixin(object):
                     break
         if value is EMPTYMARKER:
             return default
+        if isinstance(value, basestring):
+            return urllib.unquote(value)
         return value
 
     def _checkrequestedvalue(self, requested, value):
