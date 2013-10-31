@@ -105,7 +105,8 @@ class FormRenderer(XBrowserView, HTMLRendererMixin):
         return self.wraperror(name, payload)
     
     def hiddeninput(self, name, value):
-        return self._tag('input', type='hidden', name=name, value=safe_escape(value))
+        return self._tag('input', type='hidden', name=name,
+                         value=safe_escape(value))
     
     def displayinput(self, name):
         value = self.formvalueordefault(name)
