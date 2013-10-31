@@ -11,7 +11,7 @@ import sys, os
 
 version = '1.3.4'
 shortdesc = "Common browser utils for ZOPE"
-longdesc = open(os.path.join(os.path.dirname(__file__), 'README.txt')).read()
+longdesc = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
 
 setup(name='cornerstone.browser',
       version=version,
