@@ -1,8 +1,13 @@
-import urllib
-from ZPublisher.HTTPRequest import FileUpload
+import cgi
 from base import XBrowserView
+import urllib
 from tmpl import HTMLRendererMixin
-from cgi import escape
+from ZPublisher.HTTPRequest import FileUpload
+
+def safe_safe_escape(value):
+    if value:
+        return cgi.escape(value)
+    return value
 
 class FormRenderer(XBrowserView, HTMLRendererMixin):
     """An abstract form renderer and processor for repoze.formapi.
@@ -33,7 +38,7 @@ class FormRenderer(XBrowserView, HTMLRendererMixin):
         payload = self._tag('input',
                             type='text',
                             name=name,
-                            value=escape(value))
+                            value=safe_escape(value))
         return self.wraperror(name, payload)
     
     def selectioninput(self, name, vocab, multiple=None):
@@ -54,7 +59,7 @@ class FormRenderer(XBrowserView, HTMLRendererMixin):
         cbkw = {
             'type': 'checkbox',
             'name': name,
-            'value': escape(value),
+            'value': safe_escape(value),
         }
         if not isinstance(fod, list):
             fod = [fod]
@@ -70,7 +75,7 @@ class FormRenderer(XBrowserView, HTMLRendererMixin):
         cbkw = {
             'type': 'radio',
             'name': name,
-            'value': escape(value),
+            'value': safe_escape(value),
         }
         if default == value:
             cbkw['checked'] = 'checked'
@@ -82,7 +87,7 @@ class FormRenderer(XBrowserView, HTMLRendererMixin):
         if not value:
             value = ''
         payload = self._tag('textarea',
-                            escape(value),
+                            safe_escape(value),
                             name=name,
                             **kw)
         return self.wraperror(name, payload)
@@ -100,7 +105,7 @@ class FormRenderer(XBrowserView, HTMLRendererMixin):
         return self.wraperror(name, payload)
     
     def hiddeninput(self, name, value):
-        return self._tag('input', type='hidden', name=name, value=escape(value))
+        return self._tag('input', type='hidden', name=name, value=safe_escape(value))
     
     def displayinput(self, name):
         value = self.formvalueordefault(name)
@@ -108,7 +113,7 @@ class FormRenderer(XBrowserView, HTMLRendererMixin):
             return u''
         return self._tag('span',
                          self._tag('span', value),
-                         self.hiddeninput(name, escape(value)),
+                         self.hiddeninput(name, safe_escape(value)),
                          class_='displayinput')
     
     def renderedaction(self, name, multisubmit=False):
