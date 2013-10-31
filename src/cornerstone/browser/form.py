@@ -4,7 +4,7 @@ import urllib
 from tmpl import HTMLRendererMixin
 from ZPublisher.HTTPRequest import FileUpload
 
-def safe_safe_escape(value):
+def safe_escape(value):
     if value:
         return cgi.escape(value)
     return value
